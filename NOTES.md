@@ -192,12 +192,12 @@ interface RootLibMethods {
   selectUser: (uuid: string) => Promiise<void>;
 }
 
-interface DayIntervalLibState {
-  selectedInterval: number; // selected index
+interface DayDurationLibState {
+  selectedInterval: number; // selected interval ID
 }
 
-interface DayIntervalLibMethods {
-  selectInterval: (idx: number) => void;
+interface DayDurationLibMethods {
+  selectInterval: (intervalId: number) => void;
 }
 
 type DateBounds = [string, string]; // ISO-8601 start and end dates
