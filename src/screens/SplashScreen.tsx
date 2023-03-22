@@ -1,7 +1,11 @@
 import React from 'react';
 import {ActivityIndicator} from 'react-native-paper';
-import {StyleSheet} from 'react-native';
+import {StyleProp, StyleSheet, ViewStyle} from 'react-native';
 import {Screen} from '../components';
+
+export interface SplashScreenProps {
+  style?: StyleProp<ViewStyle>;
+}
 
 const styles = StyleSheet.create({
   screen: {
@@ -10,9 +14,9 @@ const styles = StyleSheet.create({
   },
 });
 
-const SplashScreen = () => {
+const SplashScreen = ({style}: SplashScreenProps) => {
   return (
-    <Screen style={styles.screen}>
+    <Screen style={[styles.screen, style]}>
       <ActivityIndicator />
     </Screen>
   );

@@ -22,9 +22,13 @@ function App(): JSX.Element {
     colors: {background: backgroundColor},
   } = theme;
 
-  const {sleepData, fetchUsers} = use(appState$);
+  const {
+    fetchUsers,
+    user: {users},
+  } = use(appState$);
 
   useEffect(() => {
+    // initialize app
     fetchUsers();
   }, [fetchUsers]);
 
@@ -35,7 +39,7 @@ function App(): JSX.Element {
           barStyle={isDarkMode ? 'light-content' : 'dark-content'}
           backgroundColor={backgroundColor}
         />
-        {sleepData ? <SleepReportScreen data={sleepData} /> : <SplashScreen />}
+        {users ? <SleepReportScreen /> : <SplashScreen />}
       </SafeAreaProvider>
     </PaperProvider>
   );

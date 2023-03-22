@@ -1,9 +1,16 @@
 import React from 'react';
-import {StyleSheet} from 'react-native';
 import {SafeAreaView, SafeAreaViewProps} from 'react-native-safe-area-context';
+import {StyleSheet} from 'react-native';
 import {SPACING, useTheme} from '../theme';
 
 export type ScreenProps = SafeAreaViewProps;
+
+const styles = StyleSheet.create({
+  safeAreaView: {
+    ...StyleSheet.absoluteFillObject,
+    paddingHorizontal: SPACING,
+  },
+});
 
 const Screen = ({children, style, ...rest}: ScreenProps) => {
   const theme = useTheme();
@@ -11,13 +18,13 @@ const Screen = ({children, style, ...rest}: ScreenProps) => {
     colors: {background: backgroundColor},
   } = theme;
   const backgroundStyle = {
-    ...StyleSheet.absoluteFillObject,
     backgroundColor: backgroundColor,
-    paddingHorizontal: SPACING,
   };
 
   return (
-    <SafeAreaView style={[backgroundStyle, style]} {...rest}>
+    <SafeAreaView
+      style={[backgroundStyle, styles.safeAreaView, style]}
+      {...rest}>
       {children}
     </SafeAreaView>
   );

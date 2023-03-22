@@ -1,4 +1,4 @@
+import Header from './Header';
 import Screen from './Screen';
-import ScrollScreen from './ScrollScreen';
 
-export {Screen, ScrollScreen};
+export {Header, Screen};
