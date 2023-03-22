@@ -1,3 +1,4 @@
+import {from} from './from';
 import useReduceMotion from './useReduceMotion';
 
-export {useReduceMotion};
+export {from, useReduceMotion};

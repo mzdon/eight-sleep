@@ -15,4 +15,5 @@ const useTheme = () => {
   return getTheme(colorScheme, reduceMotion);
 };
 
+export * from './spacing';
 export {getTheme, useTheme};

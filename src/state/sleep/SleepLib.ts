@@ -3,7 +3,12 @@ import {
   SleepDataClientWrapper,
   SleepDataNotFoundError,
 } from '../../api/sleepData';
-import {getMaxDate, getMinDate, getNowAsISO8601} from './helpers';
+import {
+  getMaxDate,
+  getMinDate,
+  getNowAsISO8601,
+  shouldFetchUserSleepData,
+} from './helpers';
 import {SleepLibActions, SleepLibState} from './types';
 
 export const DEFAULT_STATE: SleepLibState = {
@@ -17,10 +22,14 @@ const createSleepLib = () =>
   createStatedLib(DEFAULT_STATE, base => {
     const {updateState} = base;
     return {
-      async fetchUserSleepData(uuid: string) {
+      async fetchUserSleepData(userId: string) {
+        // @ts-ignore - base is typed incorrectly
+        if (!shouldFetchUserSleepData(base.state, userId)) {
+          return;
+        }
         try {
           const fetchPromise =
-            SleepDataClientWrapper.getClient().fetchUserData(uuid);
+            SleepDataClientWrapper.getClient().fetchUserData(userId);
           updateState(
             {
               isFetching: true,
@@ -39,7 +48,7 @@ const createSleepLib = () =>
               ...state,
               userSleepData: {
                 ...state.userSleepData,
-                [uuid]: {
+                [userId]: {
                   ...data,
                   minDate: getMinDate(data.intervals),
                   maxDate: getMaxDate(data.intervals),
@@ -56,7 +65,7 @@ const createSleepLib = () =>
                 ...state,
                 userSleepData: {
                   ...state.userSleepData,
-                  [uuid]: {
+                  [userId]: {
                     intervals: [],
                     maxDate: null,
                     minDate: null,

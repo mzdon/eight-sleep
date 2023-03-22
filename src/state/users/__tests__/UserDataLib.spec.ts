@@ -11,9 +11,9 @@ describe('UserDataLib', () => {
   });
 
   describe('#selectUser', () => {
-    it('sets selectedUserUuid', () => {
-      userLib.selectUser('uuid');
-      expect(userLib.state.selectedUserUuid).toBe('uuid');
+    it('sets selectedUserId', () => {
+      userLib.selectUser('userid');
+      expect(userLib.state.selectedUserId).toBe('userid');
     });
   });
 

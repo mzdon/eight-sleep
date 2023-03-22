@@ -1,21 +1,21 @@
 import {selectSleepData, SleepLibState} from './sleep';
-import {selectSelectedUserUuid, UserLibState} from './users';
+import {selectSelectedUserId, UserLibState} from './users';
 
 export const getUserSleepDataByUserId = (
   sleepState: SleepLibState,
-  userUuid: string,
+  userId: string,
 ) => {
   const sleepData = selectSleepData(sleepState);
-  return sleepData[userUuid] ?? null;
+  return sleepData[userId] ?? null;
 };
 
 export const getUserSleepData = (
   sleepState: SleepLibState,
   userState: UserLibState,
 ) => {
-  const userUuid = selectSelectedUserUuid(userState);
-  if (!userUuid) {
+  const userId = selectSelectedUserId(userState);
+  if (!userId) {
     return null;
   }
-  return getUserSleepDataByUserId(sleepState, userUuid);
+  return getUserSleepDataByUserId(sleepState, userId);
 };

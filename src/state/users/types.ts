@@ -2,7 +2,7 @@ import {User} from '../../api';
 
 export interface UserLibState {
   users: User[];
-  selectedUserUuid: string | null;
+  selectedUserId: string | null;
   requestError: Error | null;
   isFetching: boolean;
   _fetchPromise: Promise<void> | null;

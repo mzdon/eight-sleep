@@ -4,7 +4,7 @@ import {UserLibState, UserLibActions} from './types';
 
 export const DEFAULT_STATE: UserLibState = {
   users: [],
-  selectedUserUuid: null,
+  selectedUserId: null,
   requestError: null,
   isFetching: false,
   _fetchPromise: null,
@@ -35,6 +35,7 @@ const createUserLib = () =>
             state => ({
               ...state,
               users: data,
+              selectedUserId: data[0].id,
             }),
             UserLibActions.FETCH_USER_DATA_SUCCESS,
           );
@@ -55,7 +56,7 @@ const createUserLib = () =>
         updateState(
           state => ({
             ...state,
-            selectedUserUuid: userUuid,
+            selectedUserId: userUuid,
           }),
           UserLibActions.SELECT_USER,
         );

@@ -1,24 +1,31 @@
 import {mapState} from '@stated-library/core';
+import {distinctUntilKeyChanged} from 'rxjs';
 import {getUserSleepData} from './getters';
-import sleepLib, {shouldFetchUserSleepData} from './sleep';
-import {AppState} from './types';
+import sleepLib from './sleep';
 import userLib from './users';
+import {from} from '../utils';
+
+from(userLib.state$)
+  .pipe(distinctUntilKeyChanged('selectedUserId'))
+  .subscribe(({selectedUserId}) => {
+    if (selectedUserId) {
+      sleepLib.fetchUserSleepData(selectedUserId);
+    }
+  });
 
 export const getAppState = () =>
   mapState([sleepLib.state$, userLib.state$], ([sleepState, userState]) => {
-    // action exposed to the UI
-    const selectUser = (userUuid: string): void => {
-      // set select user id
-      userLib.selectUser(userUuid);
-      // refetch user data if necessary
-      if (shouldFetchUserSleepData(sleepState, userUuid)) {
-        sleepLib.fetchUserSleepData(userUuid);
-      }
-    };
     return {
       sleepData: getUserSleepData(sleepState, userState),
-      selectUser,
-    } as AppState;
+      sleep: {
+        ...sleepState,
+      },
+      user: {
+        ...userState,
+      },
+      fetchUsers: userLib.fetchUsers,
+      selectUser: userLib.selectUser,
+    };
   });
 
 export default getAppState();
