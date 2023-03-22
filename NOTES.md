@@ -160,15 +160,15 @@ interface SleepInterval {
   timeseries: TimeSeries;
 }
 
-interface UserData {
+interface UserSleepData {
   intervals: SleepInterval[],
   minDate: string; // ISO-8601
   maxDate: string; // ISO-8601
   lastFetch: string; // ISO-8601
 }
 
-interface UserDataResponse {
-  data: UserData
+interface UserSleepDataResponse {
+  intervals: SleepInterval[]
 }
 
 interface RequestError {
@@ -177,28 +177,44 @@ interface RequestError {
   op?: Function; // bound method that failed, available for retry, closure includes original args, passed args overwrite original args (nice to have?)
 }
 
-interface RootLibState {
+interface SleepLibState {
   requestError: RequestError;
   userSleepData: {
-    [uuid: string]: UserData;
+    [uuid: string]: UserSleepData;
   },
-  selectedUserUuid: string;
   isFetching: boolean;
+  _fetchPromise: Promise<void>;
 }
 
-interface RootLibMethods {
+interface SleepLibMethods {
   fetchUserData: (uuid: string) => Promise<void>;
   retryFailedRequest(args?: unknown[]) => Promise<void>;
+}
+
+interface User {
+  id: string;
+  username: string;
+  firstName: string;
+  lastName: string;
+  birthDate: string; // ISO-8601 UTC start of day date string
+}
+
+interface UserLibState {
+  users: User[];
+  selectedUserUuid: string;
+  requestError: RequestError;
+  isFetching: boolean;
+  _fetchPromise: Promise<void>;
+}
+
+interface UserLibMethods {
+  fetchUsers: () => Promise<User[]>,
   selectUser: (uuid: string) => Promiise<void>;
 }
 
-interface DayDurationLibState {
-  selectedInterval: number; // selected interval ID
-}
-
-interface DayDurationLibMethods {
-  selectInterval: (intervalId: number) => void;
-}
+// This stuff would be potential future implementation if we had to start
+// computing and rolling up averages from week to month to year
+// This logic would probably belong on some backend service
 
 type DateBounds = [string, string]; // ISO-8601 start and end dates
 
@@ -243,15 +259,4 @@ interface YearIntervalLibState {
   [uuid: string]: RangeUserData;
 }
 
-interface UserProfileState {
-  firstName: string;
-  lastName: string;
-  birthDate: string; // ISO-8601 - start of day UTC
-  username: string;
-}
-
-interface UserProfileLibMethods {
-  fetchUserProfile: (uuid: string) => Promise<void>;
-  updateUserProfile: (data: PatchUserProfileDto) => Promise<void>;
-}
 ```

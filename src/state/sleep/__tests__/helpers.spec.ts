@@ -1,9 +1,9 @@
 import {ONE_HOUR_MS} from '../constants';
 import {shouldFetchUserSleepData} from '../helpers';
-import {RootLibState} from '../types';
+import {SleepLibState} from '../types';
 
 const anyRootLibState = (o: unknown) => {
-  return o as RootLibState;
+  return o as SleepLibState;
 };
 
 describe('RootLib helpers', () => {

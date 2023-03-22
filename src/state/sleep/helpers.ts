@@ -1,9 +1,9 @@
-import {SleepInterval} from '../../../api';
+import {SleepInterval} from '../../api';
 import {ONE_HOUR_MS} from './constants';
-import {RootLibState} from './types';
+import {SleepLibState} from './types';
 
 export const shouldFetchUserSleepData = (
-  state: RootLibState,
+  state: SleepLibState,
   uuid: string,
 ): boolean => {
   const userSleepData = state.userSleepData[uuid];

@@ -1,4 +1,4 @@
-import {SleepInterval} from '../../../api';
+import {SleepInterval} from '../../api';
 
 export interface UserSleepData {
   intervals: SleepInterval[];
@@ -7,20 +7,18 @@ export interface UserSleepData {
   lastFetch: string; // ISO-8601
 }
 
-export interface RootLibState {
+export interface SleepLibState {
   requestError: Error | null;
   userSleepData: {
     [uuid: string]: UserSleepData;
   };
-  selectedUserUuid: string | null;
   isFetching: boolean;
   _fetchPromise: Promise<void> | null;
 }
 
-export enum RootLibActions {
+export enum SleepLibActions {
   FETCH_USER_SLEEP_DATA_START = 'FETCH_USER_SLEEP_DATA_START',
   FETCH_USER_SLEEP_DATA_SUCCESS = 'FETCH_USER_SLEEP_DATA_SUCCESS',
   FETCH_USER_SLEEP_DATA_FAILURE = 'FETCH_USER_SLEEP_DATA_FAILURE',
   FETCH_USER_SLEEP_DATA_COMPLETE = 'FETCH_USER_SLEEP_DATA_COMPLETE',
-  SELECT_USER = 'SELECT_USER',
 }
