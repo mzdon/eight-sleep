@@ -3,8 +3,15 @@ import {Text} from 'react-native-paper';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import {ScrollView, StyleSheet} from 'react-native';
 import {use} from '@stated-library/react';
-import {DurationTypeSelector, Header} from '../../components';
-import {useTheme} from '../../theme';
+import {
+  DurationTypeSelector,
+  Header,
+  HealthIndicators,
+  SleepStagesCard,
+  Spacer,
+  TemperatureCard,
+} from '../../components';
+import {SPACING, useTheme} from '../../theme';
 import appState$ from '../../state';
 import SplashScreen from '../SplashScreen';
 import useSleepReportReducer, {setDurationTypeAction} from './reducer';
@@ -15,6 +22,7 @@ import SleepScoreCard from '../../components/SleepScoreCard';
 const styles = StyleSheet.create({
   scrollView: {
     minHeight: '100%',
+    paddingHorizontal: SPACING,
   },
   splashScreen: {
     opacity: 0.5,
@@ -53,14 +61,17 @@ const SleepReportScreen = () => {
   );
 
   return (
-    <SafeAreaView>
+    <SafeAreaView style={{backgroundColor}}>
       <Header />
-      <ScrollView style={[{backgroundColor}, styles.scrollView]}>
-        <Text variant="headlineMedium">Sleep Report Screen</Text>
+      <Spacer />
+      <ScrollView style={styles.scrollView}>
+        <Text variant="headlineMedium">Sleep Report</Text>
+        <Spacer />
         <DurationTypeSelector
           durationType={durationType}
           selectDurationType={selectDurationType}
         />
+        <Spacer />
         <SleepScoreCard
           selectedDuration={selectedDuration}
           selectNextDuration={selectNextDuration}
@@ -68,6 +79,13 @@ const SleepReportScreen = () => {
           durationType={durationType}
           sleepData={sleepData}
         />
+        <Spacer />
+        <SleepStagesCard duration={selectedDuration} sleepData={sleepData} />
+        <Spacer />
+        <TemperatureCard duration={selectedDuration} sleepData={sleepData} />
+        <Spacer />
+        <HealthIndicators duration={selectedDuration} sleepData={sleepData} />
+        <Spacer />
         <Text variant="bodySmall">{JSON.stringify(sleepData)}</Text>
       </ScrollView>
       {isFetching && <SplashScreen style={styles.splashScreen} />}

@@ -1,8 +1,9 @@
 import React from 'react';
 import {StyleSheet, View} from 'react-native';
-import {Surface} from 'react-native-paper';
+import {Text} from 'react-native-paper';
 import {UserSleepData} from '../state/sleep';
 import {Duration, DurationType} from '../utils';
+import Card from './Card';
 import DurationDate from './DurationDate';
 import NextDurationButton from './NextDurationButton';
 import PreviousDurationButton from './PreviousDurationButton';
@@ -31,14 +32,15 @@ const SleepScoreCard = ({
   sleepData,
 }: SleepScoreCardProps) => {
   return (
-    <Surface>
+    <Card>
+      <Text variant="headlineSmall">Sleep Score</Text>
       <DurationDate duration={selectedDuration} durationType={durationType} />
       <View style={styles.view}>
         <PreviousDurationButton onPress={selectPreviousDuration} />
         <SleepScore duration={selectedDuration} sleepData={sleepData} />
         <NextDurationButton onPress={selectNextDuration} />
       </View>
-    </Surface>
+    </Card>
   );
 };
 

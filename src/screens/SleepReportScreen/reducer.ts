@@ -98,6 +98,8 @@ export function durationReducer(
         selectedDuration: getDurationForNextDurationType(
           state.selectedDuration,
           action.durationType,
+          state.minDate,
+          state.maxDate,
         ),
         durationType: action.durationType,
       };

@@ -3,7 +3,7 @@ import React, {useCallback, useRef, useState} from 'react';
 import {LayoutChangeEvent, StyleSheet} from 'react-native';
 import {IconButton, Menu, Surface, Text} from 'react-native-paper';
 import userLib from '../state/users';
-import {SPACING} from '../theme';
+import {PRESSABLE_DIMENSION, SPACING} from '../theme';
 
 const styles = StyleSheet.create({
   surface: {
@@ -37,7 +37,7 @@ const Header = () => {
       <IconButton
         onLayout={handleButtonLayout}
         icon={'menu'}
-        size={SPACING * 2}
+        size={PRESSABLE_DIMENSION}
         onPress={toggleMenu}
         accessibilityLabel={'Display available users'}
         accessibilityRole={'button'}

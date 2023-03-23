@@ -64,14 +64,29 @@ export const mapDurationTypeToStartOfDuration = (
 export const getDurationForNextDurationType = (
   lastDuration: Duration,
   durationType: DurationType,
+  minDate?: string,
+  maxDate?: string,
 ) => {
   const startOfDuration = mapDurationTypeToStartOfDuration(durationType);
   // always use the higher duration bound so we end up with the most recent date
   // from the previous duration as we reduce duration length (i.e. last day of
   // the week we were just using)
-  // TODO: pass the userSleepData as well so we can verify data exists on the newly
-  // selected duration and adjust if necessary
-  return getDuration(lastDuration[1], startOfDuration);
+  const newDuration = getDuration(lastDuration[1], startOfDuration);
+  if (minDate) {
+    // if the new upper duration bound is before the min date return a duration based on the min date
+    const min = moment(minDate);
+    if (moment(newDuration[1]).isBefore(min)) {
+      return getDuration(minDate, startOfDuration);
+    }
+  }
+  if (maxDate) {
+    // if the new lower duration bound is after the max date return a duration based on the max date
+    const max = moment(maxDate);
+    if (moment(newDuration[0]).isAfter(max)) {
+      return getDuration(maxDate, startOfDuration);
+    }
+  }
+  return newDuration;
 };
 
 export const getNextDuration = (
