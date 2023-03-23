@@ -8,6 +8,7 @@ import DurationDate from './DurationDate';
 import NextDurationButton from './NextDurationButton';
 import PreviousDurationButton from './PreviousDurationButton';
 import SleepScore from './SleepScore';
+import Spacer from './Spacer';
 
 export interface SleepScoreCardProps {
   selectedDuration: Duration;
@@ -21,6 +22,7 @@ const styles = StyleSheet.create({
   view: {
     flexDirection: 'row',
     justifyContent: 'space-between',
+    alignItems: 'center',
   },
 });
 
@@ -33,11 +35,16 @@ const SleepScoreCard = ({
 }: SleepScoreCardProps) => {
   return (
     <Card>
-      <Text variant="headlineSmall">Sleep Score</Text>
+      <Text variant="headlineSmall">Score</Text>
       <DurationDate duration={selectedDuration} durationType={durationType} />
+      <Spacer scale={0.5} />
       <View style={styles.view}>
         <PreviousDurationButton onPress={selectPreviousDuration} />
-        <SleepScore duration={selectedDuration} sleepData={sleepData} />
+        <SleepScore
+          duration={selectedDuration}
+          durationType={durationType}
+          sleepData={sleepData}
+        />
         <NextDurationButton onPress={selectNextDuration} />
       </View>
     </Card>

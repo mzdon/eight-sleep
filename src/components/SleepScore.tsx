@@ -1,37 +1,93 @@
+import moment from 'moment';
 import React from 'react';
 import {Text} from 'react-native-paper';
 import {UserSleepData} from '../state/sleep';
-import {Duration, getIntervalDataPointsWithinDuration} from '../utils';
+import {
+  Duration,
+  DurationType,
+  getIntervalDataPointsWithinDuration,
+  getMomentIteratorFromDuration,
+} from '../utils';
+import BarChart from './BarChart';
+import ProgressChart from './ProgressChart';
 
 export interface SleepScoreProps {
   duration: Duration;
+  durationType: DurationType;
   sleepData: UserSleepData | null;
 }
 
-function formatScore(score: number) {
-  return `${Math.floor(score)}%`;
-}
-
-function determineScoreDisplay(sleepData: UserSleepData, duration: Duration) {
+function determineScore(sleepData: UserSleepData, duration: Duration) {
   const data = getIntervalDataPointsWithinDuration(
     sleepData,
     duration,
     'score',
   );
   if (!data.length) {
-    return 'No data!';
+    return null;
   }
-  const sum = data.reduce((curr, next) => {
-    return curr + next;
-  }, 0);
-  return formatScore(sum / data.length);
+  return data;
 }
 
-const SleepScore = ({duration, sleepData}: SleepScoreProps) => {
-  const score = sleepData
-    ? determineScoreDisplay(sleepData, duration)
-    : 'No data!';
-  return <Text variant="displayLarge">{score}</Text>;
+function getProgressChartData(scores: [string, number][]) {
+  return {
+    data: [scores[0][1] / 100],
+  };
+}
+
+function getLabelsFromDuration(duration: Duration): string[] {
+  let labels: string[] = [];
+  const iterator = getMomentIteratorFromDuration(duration);
+  for (const mmnt of iterator) {
+    labels.push(mmnt.format('dd'));
+  }
+  return labels;
+}
+
+function getDataFromScores(
+  scores: [string, number][],
+  duration: Duration,
+): number[] {
+  let data: number[] = [];
+  const iterator = getMomentIteratorFromDuration(duration);
+  for (const mmnt of iterator) {
+    const score = scores.find(([ts]) => mmnt.isSame(moment(ts), 'date'));
+    data.push(score ? score[1] : 0);
+  }
+  return data;
+}
+
+function getBarChartData(scores: [string, number][], duration: Duration) {
+  const labels = getLabelsFromDuration(duration);
+  const data = getDataFromScores(scores, duration);
+  return {
+    labels,
+    datasets: [
+      {
+        data,
+      },
+    ],
+  };
+}
+
+const SleepScore = ({duration, durationType, sleepData}: SleepScoreProps) => {
+  const scores = sleepData ? determineScore(sleepData, duration) : null;
+  if (scores === null) {
+    return <Text variant="bodyMedium">No data!</Text>;
+  }
+  if (durationType === DurationType.DAY) {
+    return <ProgressChart data={getProgressChartData(scores)} />;
+  }
+  if (durationType === DurationType.WEEK) {
+    return (
+      <BarChart
+        data={getBarChartData(scores, duration)}
+        yAxisLabel={''}
+        yAxisSuffix={''}
+      />
+    );
+  }
+  return <Text variant="bodyMedium">{JSON.stringify(scores)}</Text>;
 };
 
 export default SleepScore;

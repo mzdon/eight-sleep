@@ -10,8 +10,8 @@ export interface TemperatureCardProps {
 }
 
 interface Data {
-  bed: [string, number][];
-  room: [string, number][];
+  bed: [string, [string, number][]][];
+  room: [string, [string, number][]][];
 }
 
 function determineData(
@@ -26,8 +26,8 @@ function determineData(
   let data: Data = {bed: [], room: []};
   return timeseries.reduce((curr, next) => {
     return {
-      bed: [...curr.bed, ...next.tempBedC],
-      room: [...curr.room, ...next.tempRoomC],
+      bed: [...curr.bed, [next[0], next[1].tempBedC]],
+      room: [...curr.room, [next[0], next[1].tempRoomC]],
     };
   }, data);
 }

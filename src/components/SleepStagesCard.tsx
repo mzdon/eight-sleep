@@ -17,7 +17,7 @@ const SleepStagesCard = ({duration, sleepData}: SleepStagesCardProps) => {
   ).flat();
   return (
     <Card>
-      <Text variant="headlineSmall">Sleep Stages</Text>
+      <Text variant="headlineSmall">Stages</Text>
       <Text>{!data.length ? 'No data!' : JSON.stringify(data)}</Text>
     </Card>
   );

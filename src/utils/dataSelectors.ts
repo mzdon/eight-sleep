@@ -23,7 +23,7 @@ export const getIntervalDataPointsWithinDuration = <
   sleepData: UserSleepData | null,
   duration: Duration,
   intervalKey: K,
-): SleepInterval[K][] => {
+): [string, SleepInterval[K]][] => {
   const intervals = getIntervalsFromDataByDuration(sleepData, duration);
-  return intervals.map(interval => interval[intervalKey]);
+  return intervals.map(interval => [interval.ts, interval[intervalKey]]);
 };

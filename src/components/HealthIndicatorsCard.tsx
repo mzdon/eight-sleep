@@ -10,8 +10,8 @@ export interface HealthIndicatorsProps {
 }
 
 interface Data {
-  heart: [string, number][];
-  respiratory: [string, number][];
+  heart: [string, [string, number][]][];
+  respiratory: [string, [string, number][]][];
 }
 
 function determineData(
@@ -26,8 +26,8 @@ function determineData(
   let data: Data = {heart: [], respiratory: []};
   return timeseries.reduce((curr, next) => {
     return {
-      heart: [...curr.heart, ...next.heartRate],
-      respiratory: [...curr.respiratory, ...next.respiratoryRate],
+      heart: [...curr.heart, [next[0], next[1].heartRate]],
+      respiratory: [...curr.respiratory, [next[0], next[1].respiratoryRate]],
     };
   }, data);
 }

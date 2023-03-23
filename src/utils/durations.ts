@@ -18,6 +18,25 @@ export const getDuration = (
   ];
 };
 
+export const getMomentIteratorFromDuration = (duration: Duration) => {
+  return {
+    [Symbol.iterator]() {
+      let m = moment(duration[0]);
+      const end = moment(duration[1]);
+      return {
+        next: () => {
+          if (m.isBefore(end)) {
+            const result = {value: m, done: false};
+            m = m.clone().add(1, 'day');
+            return result;
+          }
+          return {value: m, done: true};
+        },
+      };
+    },
+  };
+};
+
 export const getMostRecentDuration = (
   sleepData: UserSleepData | null,
   startOfDuration: moment.unitOfTime.StartOf,

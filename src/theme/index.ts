@@ -15,5 +15,6 @@ const useTheme = () => {
   return getTheme(colorScheme, reduceMotion);
 };
 
+export * from './charts';
 export * from './spacing';
 export {getTheme, useTheme};
