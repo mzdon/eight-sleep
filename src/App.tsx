@@ -39,7 +39,7 @@ function App(): JSX.Element {
           barStyle={isDarkMode ? 'light-content' : 'dark-content'}
           backgroundColor={backgroundColor}
         />
-        {users ? <SleepReportScreen /> : <SplashScreen />}
+        {users.length ? <SleepReportScreen /> : <SplashScreen />}
       </SafeAreaProvider>
     </PaperProvider>
   );
