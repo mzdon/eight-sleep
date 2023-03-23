@@ -9,6 +9,7 @@ import {
   getMomentIteratorFromDuration,
 } from '../utils';
 import BarChart from './BarChart';
+import NoData from './NoData';
 import ProgressChart from './ProgressChart';
 
 export interface SleepScoreProps {
@@ -73,7 +74,7 @@ function getBarChartData(scores: [string, number][], duration: Duration) {
 const SleepScore = ({duration, durationType, sleepData}: SleepScoreProps) => {
   const scores = sleepData ? determineScore(sleepData, duration) : null;
   if (scores === null) {
-    return <Text variant="bodyMedium">No data!</Text>;
+    return <NoData />;
   }
   if (durationType === DurationType.DAY) {
     return <ProgressChart data={getProgressChartData(scores)} />;

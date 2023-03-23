@@ -80,7 +80,11 @@ const SleepReportScreen = () => {
           sleepData={sleepData}
         />
         <Spacer />
-        <SleepStagesCard duration={selectedDuration} sleepData={sleepData} />
+        <SleepStagesCard
+          duration={selectedDuration}
+          durationType={durationType}
+          sleepData={sleepData}
+        />
         <Spacer />
         <TemperatureCard duration={selectedDuration} sleepData={sleepData} />
         <Spacer />
