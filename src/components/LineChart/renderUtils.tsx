@@ -2,9 +2,11 @@ import React from 'react';
 import moment from 'moment';
 import {G, Text} from 'react-native-svg';
 import HorizontalRule from './HorizontalRule';
-import {Scales} from './LineChart';
+import {DataPoint, Scales} from './LineChart';
 import VerticalRule from './VerticalRule';
 import {PADDING} from '../../theme';
+import {TimeSeries} from '../../api';
+import {determineDataPointAverage} from '../../utils';
 
 export const drawLegend = (
   scales: Scales,
@@ -65,4 +67,44 @@ export const drawYLabels = (
       </G>
     );
   });
+};
+
+export const determineChartDataFromTimeSeries = (
+  data: [string, TimeSeries][],
+  keys: (keyof TimeSeries)[],
+): Map<keyof TimeSeries, DataPoint[]> => {
+  const result = new Map<keyof TimeSeries, DataPoint[]>();
+
+  function extractData(
+    tSeries: TimeSeries,
+    groupManipulator?: (g: DataPoint[]) => DataPoint[],
+  ) {
+    (keys as Array<keyof TimeSeries>).forEach(k => {
+      const group = tSeries[k].map(d => ({
+        ts: new Date(d[0]).getTime(),
+        value: d[1],
+      }));
+      result.set(k, groupManipulator ? groupManipulator(group) : group);
+    });
+  }
+
+  if (data.length === 1) {
+    // one day, full granularity
+    extractData(data[0][1]);
+  } else {
+    // multiple days, daily averages
+    for (const d of data) {
+      extractData(d[1], group => {
+        const value = determineDataPointAverage(group);
+        return [
+          {
+            ts: new Date(d[0]).getTime(),
+            value: value ?? 0,
+          },
+        ];
+      });
+    }
+  }
+
+  return result;
 };

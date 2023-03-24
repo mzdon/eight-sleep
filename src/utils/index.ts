@@ -4,4 +4,5 @@ import useReduceMotion from './useReduceMotion';
 export * from './dataSelectors';
 export * from './dateTimeFormat';
 export * from './durations';
+export * from './math';
 export {from, useReduceMotion};

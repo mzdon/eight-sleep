@@ -1,9 +1,13 @@
 import React from 'react';
 import {StageEnum} from '../../api';
 import {Theme, useTheme} from '../../theme';
-import LineChart, {DataPoint, Scales} from '../LineChart';
+import LineChart, {
+  DataPoint,
+  Scales,
+  drawXLabels,
+  drawYLabels,
+} from '../LineChart';
 import {SleepStagesChartData} from './types';
-import {drawXLabels, drawYLabels} from '../LineChart/renderUtils';
 
 export interface SleepStagesLineChartProps {
   data: SleepStagesChartData;

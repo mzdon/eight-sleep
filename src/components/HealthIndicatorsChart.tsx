@@ -12,7 +12,7 @@ import LineChart, {
 } from './LineChart';
 import NoData from './NoData';
 
-export interface TemperatureChartProps {
+export interface HealthIndicatorsChartProps {
   data: [string, TimeSeries][];
 }
 
@@ -23,17 +23,21 @@ const determineChartData = (
   colors: Theme['colors'],
 ): ChartData => {
   const dataMap = determineChartDataFromTimeSeries(data, [
-    'tempBedC',
-    'tempRoomC',
+    'heartRate',
+    'respiratoryRate',
   ]);
   const result: ChartData = [];
-  const bed = dataMap.get('tempBedC');
-  if (bed?.length) {
-    result.push({data: bed, color: colors.primary, label: 'Bed'});
+  const heart = dataMap.get('heartRate');
+  if (heart?.length) {
+    result.push({data: heart, color: colors.primary, label: 'Heart'});
   }
-  const room = dataMap.get('tempRoomC');
-  if (room?.length) {
-    result.push({data: room, color: colors.secondary, label: 'Room'});
+  const respiratory = dataMap.get('respiratoryRate');
+  if (respiratory?.length) {
+    result.push({
+      data: respiratory,
+      color: colors.secondary,
+      label: 'Breathing',
+    });
   }
   return result;
 };
@@ -41,7 +45,7 @@ const determineChartData = (
 const getGetXLabel = (days: number) => (val: Date) =>
   moment(val).format(days > 1 ? 'dd' : 'hha');
 // TODO use RNLocalize to determine whether to show C or F and convert when necessary
-const getYLabel = (val: number) => `${val}ºC`;
+const getYLabel = (val: number) => `${val}bpm`;
 
 const drawExtras = (scales: Scales, chartData: ChartData, days: number) => {
   const rules = [
@@ -55,7 +59,7 @@ const drawExtras = (scales: Scales, chartData: ChartData, days: number) => {
   return rules;
 };
 
-const TemperatureChart = ({data}: TemperatureChartProps) => {
+const HealthIndicatorsChart = ({data}: HealthIndicatorsChartProps) => {
   const {colors} = useTheme();
   if (!data?.length) {
     return <NoData />;
@@ -73,4 +77,4 @@ const TemperatureChart = ({data}: TemperatureChartProps) => {
   );
 };
 
-export default TemperatureChart;
+export default HealthIndicatorsChart;

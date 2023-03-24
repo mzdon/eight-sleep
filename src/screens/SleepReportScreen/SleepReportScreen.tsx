@@ -20,8 +20,11 @@ import {DurationType} from '../../utils';
 import SleepScoreCard from '../../components/SleepScoreCard';
 
 const styles = StyleSheet.create({
+  safeAreaView: {
+    flex: 1,
+  },
   scrollView: {
-    minHeight: '100%',
+    flex: 1,
     paddingHorizontal: SPACING,
   },
   splashScreen: {
@@ -61,10 +64,10 @@ const SleepReportScreen = () => {
   );
 
   return (
-    <SafeAreaView style={{backgroundColor}}>
+    <SafeAreaView style={[styles.safeAreaView, {backgroundColor}]}>
       <Header />
-      <Spacer />
       <ScrollView style={styles.scrollView}>
+        <Spacer />
         <Text variant="headlineMedium">Sleep Report</Text>
         <Spacer />
         <DurationTypeSelector
@@ -89,7 +92,7 @@ const SleepReportScreen = () => {
         <TemperatureCard duration={selectedDuration} sleepData={sleepData} />
         <Spacer />
         <HealthIndicators duration={selectedDuration} sleepData={sleepData} />
-        <Spacer />
+        <Spacer scale={2} />
       </ScrollView>
       {isFetching && <SplashScreen style={styles.splashScreen} />}
     </SafeAreaView>
