@@ -17,4 +17,5 @@ const useTheme = () => {
 
 export * from './charts';
 export * from './spacing';
+export * from './types';
 export {getTheme, useTheme};
