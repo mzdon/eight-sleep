@@ -21,8 +21,16 @@ export interface DataPoint {
 export interface LineChartProps {
   height?: number;
   width?: number;
-  data: DataPoint[];
+  data: DataPoint[][];
+  colors?: string[];
   drawExtras?: (scales: Scales) => JSX.Element[];
+}
+
+export interface MinMaxes {
+  minX: number;
+  maxX: number;
+  minY: number;
+  maxY: number;
 }
 
 export interface Scales {
@@ -32,17 +40,31 @@ export interface Scales {
   width: number;
 }
 
-const getScales = (data: DataPoint[], height: number, width: number) => {
-  const max = Math.max(...data.map(val => val.value));
-  const y = scaleLinear()
-    .domain([0, max + 1])
-    .range([height, 0]);
+const getMinMax = (data: DataPoint[][]): MinMaxes => {
+  const allData = [...data.flat()];
+  const allTs = [...allData.map(d => d.ts)];
+  const minX = Math.min(...allTs);
+  const maxX = Math.max(...allTs);
+  const allVal = [...allData.map(d => d.value)];
+  const minY = Math.min(...allVal);
+  const maxY = Math.max(...allVal);
+  return {
+    minX,
+    maxX,
+    minY,
+    maxY,
+  };
+};
 
-  const maxDate = Math.max(...data.map(val => val.ts));
-  const minDate = Math.min(...data.map(val => val.ts));
+const getScales = (minMax: MinMaxes, height: number, width: number) => {
+  const {minX, maxX, minY, maxY} = minMax;
+  const y = scaleLinear()
+    .domain([minY, maxY])
+    .range([height - PADDING * 2, PADDING * 2]);
+
   const x = scaleTime()
-    .domain([new Date(minDate), new Date(maxDate)])
-    .range([40, width - 10]);
+    .domain([new Date(minX), new Date(maxX)])
+    .range([PADDING * 3, width - PADDING]);
 
   return {x, y, height, width};
 };
@@ -61,23 +83,27 @@ const LineChart = ({
   height = 200,
   width = 200,
   data,
+  colors,
   drawExtras,
 }: LineChartProps) => {
-  const {colors} = useTheme();
-  const scales = getScales(data, height, width);
-  const curve = makeCurve(data, scales);
+  const {colors: themeColors} = useTheme();
+  const minMaxes = getMinMax(data);
+  const scales = getScales(minMaxes, height, width);
+  const curves = data.map(d => makeCurve(d, scales));
   return (
     <Animated.View>
       <Svg width={width} height={height}>
         <G y={-PADDING}>
           {!!drawExtras && drawExtras(scales)}
-          <Path
-            key={'curve'}
-            d={curve}
-            strokeWidth="2"
-            stroke={colors.primary}
-            fill={'none'}
-          />
+          {curves.map((curve, i) => (
+            <Path
+              key={`curve-${i}`}
+              d={curve}
+              strokeWidth="2"
+              stroke={colors ? colors[i] : themeColors.primary}
+              fill={'none'}
+            />
+          ))}
         </G>
       </Svg>
     </Animated.View>

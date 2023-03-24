@@ -90,7 +90,6 @@ const SleepReportScreen = () => {
         <Spacer />
         <HealthIndicators duration={selectedDuration} sleepData={sleepData} />
         <Spacer />
-        <Text variant="bodySmall">{JSON.stringify(sleepData)}</Text>
       </ScrollView>
       {isFetching && <SplashScreen style={styles.splashScreen} />}
     </SafeAreaView>
