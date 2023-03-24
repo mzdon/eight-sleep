@@ -88,7 +88,9 @@ export const determineChartDataFromTimeSeries = (
         ts: new Date(d[0]).getTime(),
         value: d[1],
       }));
-      result.set(k, groupManipulator ? groupManipulator(group) : group);
+      const dataArr = result.get(k) || [];
+      dataArr.push(...(groupManipulator ? groupManipulator(group) : group));
+      result.set(k, dataArr);
     });
   }
 

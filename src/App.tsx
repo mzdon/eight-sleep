@@ -14,6 +14,7 @@ import {use} from '@stated-library/react';
 import appState$ from './state';
 import {useTheme} from './theme';
 import {SleepReportScreen, SplashScreen} from './screens';
+import {ErrorBoundary} from './components';
 
 function App(): JSX.Element {
   const theme = useTheme();
@@ -39,7 +40,9 @@ function App(): JSX.Element {
           barStyle={isDarkMode ? 'light-content' : 'dark-content'}
           backgroundColor={backgroundColor}
         />
-        {users.length ? <SleepReportScreen /> : <SplashScreen />}
+        <ErrorBoundary>
+          {users.length ? <SleepReportScreen /> : <SplashScreen />}
+        </ErrorBoundary>
       </SafeAreaProvider>
     </PaperProvider>
   );

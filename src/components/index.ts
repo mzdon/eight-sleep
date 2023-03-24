@@ -1,6 +1,7 @@
 import BarChart from './BarChart';
 import Card from './Card';
 import DurationTypeSelector from './DurationTypeSelector';
+import ErrorBoundary from './ErrorBoundary';
 import Header from './Header';
 import HealthIndicators from './HealthIndicatorsCard';
 import LineChart from './LineChart/LineChart';
@@ -15,6 +16,7 @@ export {
   BarChart,
   Card,
   DurationTypeSelector,
+  ErrorBoundary,
   Header,
   HealthIndicators,
   LineChart,

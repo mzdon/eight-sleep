@@ -29,25 +29,25 @@ const getPieChartData = (
   return [
     {
       name: 'Out',
-      duration: dataMap.get(StageEnum.OUT),
+      duration: dataMap.get(StageEnum.OUT) ?? 0,
       color: `rgba(${r},${g},${b},0.2)`,
       legendFontColor,
     },
     {
       name: 'Awake',
-      duration: dataMap.get(StageEnum.AWAKE),
+      duration: dataMap.get(StageEnum.AWAKE) ?? 0,
       color: `rgba(${r},${g},${b},0.4)`,
       legendFontColor,
     },
     {
       name: 'Light',
-      duration: dataMap.get(StageEnum.LIGHT),
+      duration: dataMap.get(StageEnum.LIGHT) ?? 0,
       color: `rgba(${r},${g},${b},0.6)`,
       legendFontColor,
     },
     {
       name: 'Deep',
-      duration: dataMap.get(StageEnum.DEEP),
+      duration: dataMap.get(StageEnum.DEEP) ?? 0,
       color: `rgba(${r},${g},${b},0.8)`,
       legendFontColor,
     },
