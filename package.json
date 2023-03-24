@@ -51,11 +51,11 @@
   },
   "jest": {
     "preset": "react-native",
-    "setupFiles": [
+    "setupFilesAfterEnv": [
       "<rootDir>/test/setup.ts"
     ],
     "transformIgnorePatterns": [
-      "node_modules/(?!@react-native|react-native|react-native-safe-area-context)"
+      "node_modules/(?!@react-native|react-native|react-native-safe-area-context|d3*|robust-predicates|internmap)"
     ]
   }
 }
