@@ -47,10 +47,15 @@ const getGetXLabel = (days: number) => (val: Date) =>
 // TODO use RNLocalize to determine whether to show C or F and convert when necessary
 const getYLabel = (val: number) => `${val}bpm`;
 
-const drawExtras = (scales: Scales, chartData: ChartData, days: number) => {
+const drawExtras = (
+  scales: Scales,
+  chartData: ChartData,
+  colors: Theme['colors'],
+  days: number,
+) => {
   const rules = [
-    ...drawXLabels(scales, chartData[0].color, getGetXLabel(days), 4),
-    ...drawYLabels(scales, chartData[0].color, getYLabel, 4),
+    ...drawXLabels(scales, colors.onBackground, getGetXLabel(days), 4),
+    ...drawYLabels(scales, colors.onBackground, getYLabel, 4),
     ...drawLegend(
       scales,
       chartData.map(d => ({color: d.color, label: d.label})),
@@ -72,7 +77,7 @@ const HealthIndicatorsChart = ({data}: HealthIndicatorsChartProps) => {
     <LineChart
       data={chartData.map(d => d.data)}
       colors={chartData.map(d => d.color)}
-      drawExtras={scales => drawExtras(scales, chartData, data.length)}
+      drawExtras={scales => drawExtras(scales, chartData, colors, data.length)}
     />
   );
 };

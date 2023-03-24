@@ -11,7 +11,7 @@ const HorizontalRule = ({height, width}: HorizontalRuleProps) => {
   const {colors} = useTheme();
   return (
     <Line
-      x1={PADDING}
+      x1={PADDING * 2}
       y1={height}
       x2={width}
       y2={height}

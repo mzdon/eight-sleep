@@ -35,8 +35,12 @@ export const drawXLabels = (
   return widths.map(xs => {
     return (
       <G key={xs.val.toISOString()}>
-        <Text x={xs.w} y={scales.height} stroke={color} fontWeight={1}>
-          {getLabel ? getLabel(xs.val) : moment(xs.val).format('hh a')}
+        <Text
+          x={xs.w - PADDING}
+          y={scales.height}
+          stroke={color}
+          fontWeight={1}>
+          {getLabel ? getLabel(xs.val) : moment(xs.val).format('hha')}
         </Text>
         <VerticalRule height={scales.height} width={xs.w} />
       </G>

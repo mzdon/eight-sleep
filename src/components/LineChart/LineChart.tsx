@@ -1,7 +1,8 @@
 import React from 'react';
-import Animated from 'react-native-reanimated';
-import {G, Path, Svg} from 'react-native-svg';
+import Animated, {useAnimatedProps} from 'react-native-reanimated';
+import {G, Path, PathProps, Svg} from 'react-native-svg';
 import {
+  CurveFactory,
   curveNatural,
   line,
   ScaleLinear,
@@ -24,6 +25,7 @@ export interface LineChartProps {
   data: DataPoint[][];
   colors?: string[];
   drawExtras?: (scales: Scales) => JSX.Element[];
+  curveFactory?: CurveFactory;
 }
 
 export interface MinMaxes {
@@ -60,23 +62,34 @@ const getScales = (minMax: MinMaxes, height: number, width: number) => {
   const {minX, maxX, minY, maxY} = minMax;
   const y = scaleLinear()
     .domain([minY, maxY])
-    .range([height - PADDING * 2, PADDING * 2]);
+    .range([height - PADDING * 3, PADDING * 2]);
 
   const x = scaleTime()
     .domain([new Date(minX), new Date(maxX)])
-    .range([PADDING * 3, width - PADDING]);
+    .range([PADDING * 4, width - PADDING * 2]);
 
   return {x, y, height, width};
 };
 
-const makeCurve = (data: DataPoint[], scales: Scales): string => {
+const makeCurve = (
+  data: DataPoint[],
+  scales: Scales,
+  curveFactory: CurveFactory,
+): string => {
   const {x, y} = scales;
   const curvedLine = line<DataPoint>()
     .x(d => x(new Date(d.ts)))
     .y(d => y(d.value))
-    .curve(curveNatural)(data);
+    .curve(curveFactory)(data);
 
   return curvedLine!;
+};
+
+const AnimatedPath = Animated.createAnimatedComponent(Path);
+
+const Curve = ({d, ...rest}: PathProps) => {
+  const animatedProps = useAnimatedProps(() => ({d}));
+  return <AnimatedPath animatedProps={animatedProps} {...rest} />;
 };
 
 const LineChart = ({
@@ -85,18 +98,19 @@ const LineChart = ({
   data,
   colors,
   drawExtras,
+  curveFactory = curveNatural,
 }: LineChartProps) => {
   const {colors: themeColors} = useTheme();
   const minMaxes = getMinMax(data);
   const scales = getScales(minMaxes, height, width);
-  const curves = data.map(d => makeCurve(d, scales));
+  const curves = data.map(d => makeCurve(d, scales, curveFactory));
   return (
     <Animated.View>
       <Svg width={width} height={height}>
         <G y={-PADDING}>
           {!!drawExtras && drawExtras(scales)}
           {curves.map((curve, i) => (
-            <Path
+            <Curve
               key={`curve-${i}`}
               d={curve}
               strokeWidth="2"
