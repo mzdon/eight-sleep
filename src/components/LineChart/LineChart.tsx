@@ -1,5 +1,9 @@
-import React from 'react';
-import Animated, {useAnimatedProps} from 'react-native-reanimated';
+import React, {useEffect} from 'react';
+import Animated, {
+  useAnimatedProps,
+  useSharedValue,
+  withTiming,
+} from 'react-native-reanimated';
 import {G, Path, PathProps, Svg} from 'react-native-svg';
 import {
   CurveFactory,
@@ -13,6 +17,7 @@ import {
 import {PADDING} from '../../theme';
 import {useTheme} from 'react-native-paper';
 import {withAdaptiveView} from '../hoc';
+import {mixPath, parse} from 'react-native-redash';
 
 export interface DataPoint {
   ts: number;
@@ -87,9 +92,42 @@ const makeCurve = (
 
 const AnimatedPath = Animated.createAnimatedComponent(Path);
 
-const Curve = ({d, ...rest}: PathProps) => {
-  const animatedProps = useAnimatedProps(() => ({d}));
-  return <AnimatedPath animatedProps={animatedProps} {...rest} />;
+const Curve = ({d, ...rest}: Omit<PathProps, 'd'> & {d: string}) => {
+  const p1 = useSharedValue(parse(d));
+  const p2 = useSharedValue(parse(d));
+  const animComplete = useSharedValue(true);
+  const progress = useSharedValue(1);
+  const a = useAnimatedProps(() => {
+    return {
+      d: mixPath(progress.value, p2.value, p1.value),
+    };
+  });
+  useEffect(() => {
+    if (animComplete.value) {
+      animComplete.value = false;
+      progress.value = 0;
+      p1.value = parse(d);
+      if (p2.value.curves.length !== p1.value.curves.length) {
+        if (p2.value.curves.length > p1.value.curves.length) {
+          p2.value = {
+            ...p2.value,
+            curves: p2.value.curves.slice(0, p1.value.curves.length - 1),
+          };
+        } else {
+          p1.value = {
+            ...p1.value,
+            curves: p1.value.curves.slice(0, p2.value.curves.length - 1),
+          };
+        }
+      }
+      progress.value = withTiming(1, {}, () => {
+        p2.value = p1.value;
+        animComplete.value = true;
+      });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [d]);
+  return <AnimatedPath animatedProps={a} {...rest} />;
 };
 
 const LineChart = ({
@@ -111,7 +149,7 @@ const LineChart = ({
           {!!drawExtras && drawExtras(scales)}
           {curves.map((curve, i) => (
             <Curve
-              key={`curve-${i}`}
+              key={`curve-${width}-${i}`}
               d={curve}
               strokeWidth="2"
               stroke={colors ? colors[i] : themeColors.primary}
