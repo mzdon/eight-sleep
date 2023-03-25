@@ -1,6 +1,6 @@
 import React from 'react';
 import Animated, {useAnimatedProps} from 'react-native-reanimated';
-import {G, Path, PathProps, Svg} from 'react-native-svg';
+import {Circle, G, Path, PathProps, Svg} from 'react-native-svg';
 import {
   CurveFactory,
   curveNatural,
@@ -109,6 +109,16 @@ const LineChart = ({
       <Svg width={width} height={height}>
         <G y={-PADDING}>
           {!!drawExtras && drawExtras(scales)}
+          {data.map((d, i) =>
+            d.map(({ts, value}) => (
+              <Circle
+                x={scales.x(ts)}
+                y={scales.y(value)}
+                fill={colors ? colors[i] : themeColors.primary}
+                r={2}
+              />
+            )),
+          )}
           {curves.map((curve, i) => (
             <Curve
               key={`curve-${i}`}

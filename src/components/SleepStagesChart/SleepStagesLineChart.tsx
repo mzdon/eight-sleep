@@ -1,5 +1,5 @@
 import React from 'react';
-import {curveStep} from 'd3';
+import {curveStepBefore} from 'd3';
 import {StageEnum} from '../../api';
 import {Theme, useTheme} from '../../theme';
 import LineChart, {
@@ -70,7 +70,7 @@ const SleepStagesLineChart = ({data}: SleepStagesLineChartProps) => {
     <LineChart
       data={[lineData]}
       drawExtras={scales => drawLineMarkers(scales, colors)}
-      curveFactory={curveStep}
+      curveFactory={curveStepBefore}
     />
   );
 };
