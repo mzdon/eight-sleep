@@ -2,11 +2,12 @@ import React from 'react';
 import moment from 'moment';
 import {G, Text} from 'react-native-svg';
 import HorizontalRule from './HorizontalRule';
-import {DataPoint, Scales} from './LineChart';
+import {DataPoint, Scales, TooltipData} from './types';
 import VerticalRule from './VerticalRule';
 import {PADDING} from '../../theme';
 import {TimeSeries} from '../../api';
 import {determineDataPointAverage} from '../../utils';
+import Tooltip from './Tooltip';
 
 export const drawLegend = (
   scales: Scales,
@@ -42,7 +43,7 @@ export const drawXLabels = (
           fontWeight={1}>
           {getLabel ? getLabel(xs.val) : moment(xs.val).format('hha')}
         </Text>
-        <VerticalRule height={scales.height} width={xs.w} />
+        <VerticalRule height={scales.height} x={xs.w} />
       </G>
     );
   });
@@ -72,6 +73,11 @@ export const drawYLabels = (
     );
   });
 };
+
+export const drawTooltip = (
+  data: TooltipData[] | null,
+  scales: Scales,
+): JSX.Element => <Tooltip dataPoints={data} scales={scales} />;
 
 export const determineChartDataFromTimeSeries = (
   data: [string, TimeSeries][],

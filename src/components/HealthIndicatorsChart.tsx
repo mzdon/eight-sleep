@@ -9,6 +9,8 @@ import LineChart, {
   drawLegend,
   drawXLabels,
   drawYLabels,
+  TooltipData,
+  drawTooltip,
 } from './LineChart';
 import NoData from './NoData';
 
@@ -45,7 +47,7 @@ const determineChartData = (
 const getGetXLabel = (days: number) => (val: Date) =>
   moment(val).format(days > 1 ? 'dd' : 'hha');
 // TODO use RNLocalize to determine whether to show C or F and convert when necessary
-const getYLabel = (val: number) => `${val}bpm`;
+const getYLabel = (val: number) => `${val.toFixed(1)}bpm`;
 
 const drawExtras = (
   scales: Scales,
@@ -64,6 +66,13 @@ const drawExtras = (
   return rules;
 };
 
+const drawHealthTooltip = (data: TooltipData[] | null, scales: Scales) => {
+  return drawTooltip(
+    data?.map(d => ({...d, format: getYLabel})) ?? null,
+    scales,
+  );
+};
+
 const HealthIndicatorsChart = ({data}: HealthIndicatorsChartProps) => {
   const {colors} = useTheme();
   if (!data?.length) {
@@ -78,6 +87,7 @@ const HealthIndicatorsChart = ({data}: HealthIndicatorsChartProps) => {
       data={chartData.map(d => d.data)}
       colors={chartData.map(d => d.color)}
       drawExtras={scales => drawExtras(scales, chartData, colors, data.length)}
+      drawTooltip={drawHealthTooltip}
     />
   );
 };

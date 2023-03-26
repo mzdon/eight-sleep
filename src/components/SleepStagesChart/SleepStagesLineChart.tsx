@@ -1,5 +1,5 @@
 import React from 'react';
-import {curveStepBefore} from 'd3';
+import {curveStep} from 'd3';
 import {StageEnum} from '../../api';
 import {Theme, useTheme} from '../../theme';
 import LineChart, {
@@ -7,6 +7,8 @@ import LineChart, {
   Scales,
   drawXLabels,
   drawYLabels,
+  TooltipData,
+  drawTooltip,
 } from '../LineChart';
 import {SleepStagesChartData} from './types';
 
@@ -63,6 +65,13 @@ const drawLineMarkers = (
   return [...xLabels, ...yLabels];
 };
 
+const drawStagesTooltip = (data: TooltipData[] | null, scales: Scales) => {
+  return drawTooltip(
+    data?.map(d => ({...d, format: mapNumberToStageLabel})) ?? null,
+    scales,
+  );
+};
+
 const SleepStagesLineChart = ({data}: SleepStagesLineChartProps) => {
   const {colors} = useTheme();
   const lineData = getLineChartData(data);
@@ -70,7 +79,8 @@ const SleepStagesLineChart = ({data}: SleepStagesLineChartProps) => {
     <LineChart
       data={[lineData]}
       drawExtras={scales => drawLineMarkers(scales, colors)}
-      curveFactory={curveStepBefore}
+      drawTooltip={drawStagesTooltip}
+      curveFactory={curveStep}
     />
   );
 };
