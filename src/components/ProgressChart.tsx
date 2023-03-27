@@ -12,7 +12,7 @@ export interface ProgressChartProps {
 const ProgressChart = ({
   data,
   width = 200,
-  height = 200,
+  height = 100,
 }: ProgressChartProps) => {
   const config = useChartConfig();
   return (

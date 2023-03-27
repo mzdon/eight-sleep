@@ -1,7 +1,12 @@
-import React, {useCallback, useState} from 'react';
+import React, {useCallback, useEffect, useState} from 'react';
 import {Dimensions, GestureResponderEvent} from 'react-native';
-import Animated, {useAnimatedProps} from 'react-native-reanimated';
+import Animated, {
+  useAnimatedProps,
+  useSharedValue,
+  withTiming,
+} from 'react-native-reanimated';
 import {Circle, G, Path, PathProps, Svg} from 'react-native-svg';
+import {mixPath, parse, serialize} from 'react-native-redash';
 import {CurveFactory, curveNatural, line, scaleLinear, scaleTime} from 'd3';
 import {PADDING} from '../../theme';
 import {useTheme} from 'react-native-paper';
@@ -67,9 +72,33 @@ const makeCurve = (
 
 const AnimatedPath = Animated.createAnimatedComponent(Path);
 
-const Curve = ({d, ...rest}: PathProps) => {
-  const animatedProps = useAnimatedProps(() => ({d}));
-  return <AnimatedPath animatedProps={animatedProps} {...rest} />;
+const Curve = ({d, ...rest}: Omit<PathProps, 'd'> & {d: string}) => {
+  const p1 = useSharedValue(parse(d));
+  const p2 = useSharedValue(parse(d));
+  const animComplete = useSharedValue(true);
+  const progress = useSharedValue(1);
+  const a = useAnimatedProps(() => {
+    let nextD = serialize(p1.value);
+    if (p2.value.curves.length <= p1.value.curves.length) {
+      nextD = mixPath(progress.value, p2.value, p1.value);
+    }
+    return {
+      d: nextD,
+    };
+  });
+  useEffect(() => {
+    if (animComplete.value) {
+      animComplete.value = false;
+      progress.value = 0;
+      p1.value = parse(d);
+      progress.value = withTiming(1, {}, () => {
+        p2.value = p1.value;
+        animComplete.value = true;
+      });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [d]);
+  return <AnimatedPath animatedProps={a} {...rest} />;
 };
 
 const LineChart = ({
@@ -157,7 +186,7 @@ const LineChart = ({
           )}
           {curves.map((curve, i) => (
             <Curve
-              key={`curve-${i}`}
+              key={`curve-${width}-${i}`}
               d={curve}
               strokeWidth="2"
               stroke={colors ? colors[i] : themeColors.primary}
