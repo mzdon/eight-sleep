@@ -1,8 +1,7 @@
-import {from} from './from';
-import useReduceMotion from './useReduceMotion';
-
 export * from './dataSelectors';
 export * from './dateTimeFormat';
 export * from './durations';
+export * from './from';
 export * from './math';
-export {from, useReduceMotion};
+export * from './throttle';
+export * from './useReduceMotion';

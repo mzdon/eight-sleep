@@ -7,6 +7,7 @@ import {PADDING} from '../../theme';
 import {useTheme} from 'react-native-paper';
 import {withAdaptiveView} from '../hoc';
 import {DataPoint, MinMaxes, Scales, TooltipData} from './types';
+import {throttle} from '../../utils';
 
 export interface LineChartProps {
   height?: number;
@@ -64,8 +65,6 @@ const makeCurve = (
   return curvedLine!;
 };
 
-const noop = () => undefined;
-
 const AnimatedPath = Animated.createAnimatedComponent(Path);
 
 const Curve = ({d, ...rest}: PathProps) => {
@@ -89,15 +88,14 @@ const LineChart = ({
 
   // tooltip handling
   const [tooltipData, setTooltipData] = useState<TooltipData[] | null>(null);
-  const showTooltip = useCallback(
-    (event: GestureResponderEvent) => {
-      const {locationX} = event.nativeEvent;
+  const handleTooltipGesutre = useCallback(
+    (eventX: number) => {
       const nearestData = data.map((d, i) =>
         d.reduce(
           (curr, next) => {
             const currX = scales.x(curr.data.ts);
             const nextX = scales.x(next.ts);
-            if (Math.abs(locationX - currX) > Math.abs(locationX - nextX)) {
+            if (Math.abs(eventX - currX) > Math.abs(eventX - nextX)) {
               return {
                 data: next,
                 color: colors ? colors[i] : themeColors.primary,
@@ -112,15 +110,37 @@ const LineChart = ({
     },
     [colors, data, scales, themeColors.primary],
   );
+  const showTooltip = useCallback(
+    (event: GestureResponderEvent) => {
+      if (!drawTooltip) {
+        return false;
+      }
+      const {locationX} = event.nativeEvent;
+      handleTooltipGesutre(locationX);
+      return true;
+    },
+    [drawTooltip, handleTooltipGesutre],
+  );
   const hideTooltip = useCallback(() => setTooltipData(null), []);
+  const updateTooltip = useCallback(
+    (event: GestureResponderEvent) => {
+      const throttledFn = throttle((e: GestureResponderEvent) => {
+        handleTooltipGesutre(e.nativeEvent.locationX);
+      }, 500);
+      throttledFn(event);
+    },
+    [handleTooltipGesutre],
+  );
 
   return (
     <Animated.View>
       <Svg
         width={width}
         height={height}
-        onPressIn={drawTooltip ? showTooltip : noop}
-        onPressOut={drawTooltip ? hideTooltip : noop}>
+        onStartShouldSetResponder={showTooltip}
+        onResponderMove={updateTooltip}
+        onResponderRelease={hideTooltip}
+        onResponderTerminate={hideTooltip}>
         <G y={-PADDING}>
           {!!drawExtras && drawExtras(scales)}
           {!!drawTooltip && drawTooltip(tooltipData, scales)}
