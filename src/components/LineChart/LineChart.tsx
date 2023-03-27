@@ -125,8 +125,9 @@ const LineChart = ({
           {!!drawExtras && drawExtras(scales)}
           {!!drawTooltip && drawTooltip(tooltipData, scales)}
           {data.map((d, i) =>
-            d.map(({ts, value}) => (
+            d.map(({ts, value}, j) => (
               <Circle
+                key={`circle-${i}-${j}`}
                 x={scales.x(ts)}
                 y={scales.y(value)}
                 fill={colors ? colors[i] : themeColors.primary}

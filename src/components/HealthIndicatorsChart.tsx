@@ -10,7 +10,7 @@ import LineChart, {
   drawXLabels,
   drawYLabels,
   TooltipData,
-  drawTooltip,
+  Tooltip,
 } from './LineChart';
 import NoData from './NoData';
 
@@ -66,12 +66,12 @@ const drawExtras = (
   return rules;
 };
 
-const drawHealthTooltip = (data: TooltipData[] | null, scales: Scales) => {
-  return drawTooltip(
-    data?.map(d => ({...d, format: getYLabel})) ?? null,
-    scales,
-  );
-};
+const drawTooltip = (data: TooltipData[] | null, scales: Scales) => (
+  <Tooltip
+    dataPoints={data?.map(d => ({...d, format: getYLabel})) ?? null}
+    scales={scales}
+  />
+);
 
 const HealthIndicatorsChart = ({data}: HealthIndicatorsChartProps) => {
   const {colors} = useTheme();
@@ -87,7 +87,7 @@ const HealthIndicatorsChart = ({data}: HealthIndicatorsChartProps) => {
       data={chartData.map(d => d.data)}
       colors={chartData.map(d => d.color)}
       drawExtras={scales => drawExtras(scales, chartData, colors, data.length)}
-      drawTooltip={drawHealthTooltip}
+      drawTooltip={drawTooltip}
     />
   );
 };

@@ -40,13 +40,14 @@ const Tooltip = ({dataPoints, scales}: TooltipProps) => {
   }
   return (
     <G>
-      {dataPoints.map(({data, color, format}) => {
+      {dataPoints.map(({data, color, format}, i) => {
         let string = String(data.value);
         if (format) {
           string = format(data.value) || string;
         }
         return (
           <TooltipText
+            key={`tooltip-${i}-${string}`}
             x={scales.x(data.ts)}
             y={scales.y(data.value)}
             color={color}>
