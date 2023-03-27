@@ -7,6 +7,8 @@ import LineChart, {
   Scales,
   drawXLabels,
   drawYLabels,
+  TooltipData,
+  Tooltip,
 } from '../LineChart';
 import {SleepStagesChartData} from './types';
 
@@ -63,6 +65,13 @@ const drawLineMarkers = (
   return [...xLabels, ...yLabels];
 };
 
+const drawTooltip = (data: TooltipData[] | null, scales: Scales) => (
+  <Tooltip
+    dataPoints={data?.map(d => ({...d, format: mapNumberToStageLabel})) ?? null}
+    scales={scales}
+  />
+);
+
 const SleepStagesLineChart = ({data}: SleepStagesLineChartProps) => {
   const {colors} = useTheme();
   const lineData = getLineChartData(data);
@@ -70,6 +79,7 @@ const SleepStagesLineChart = ({data}: SleepStagesLineChartProps) => {
     <LineChart
       data={[lineData]}
       drawExtras={scales => drawLineMarkers(scales, colors)}
+      drawTooltip={drawTooltip}
       curveFactory={curveStep}
     />
   );

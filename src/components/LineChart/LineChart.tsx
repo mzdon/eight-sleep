@@ -1,28 +1,18 @@
-import React, {useEffect} from 'react';
+import React, {useCallback, useEffect, useState} from 'react';
+import {Dimensions, GestureResponderEvent} from 'react-native';
 import Animated, {
   useAnimatedProps,
   useSharedValue,
   withTiming,
 } from 'react-native-reanimated';
-import {G, Path, PathProps, Svg} from 'react-native-svg';
-import {
-  CurveFactory,
-  curveNatural,
-  line,
-  ScaleLinear,
-  scaleLinear,
-  ScaleTime,
-  scaleTime,
-} from 'd3';
+import {Circle, G, Path, PathProps, Svg} from 'react-native-svg';
+import {mixPath, parse, serialize} from 'react-native-redash';
+import {CurveFactory, curveNatural, line, scaleLinear, scaleTime} from 'd3';
 import {PADDING} from '../../theme';
 import {useTheme} from 'react-native-paper';
 import {withAdaptiveView} from '../hoc';
-import {mixPath, parse} from 'react-native-redash';
-
-export interface DataPoint {
-  ts: number;
-  value: number;
-}
+import {DataPoint, MinMaxes, Scales, TooltipData} from './types';
+import {throttle} from '../../utils';
 
 export interface LineChartProps {
   height?: number;
@@ -30,21 +20,11 @@ export interface LineChartProps {
   data: DataPoint[][];
   colors?: string[];
   drawExtras?: (scales: Scales) => JSX.Element[];
+  drawTooltip?: (
+    tooltipData: TooltipData[] | null,
+    scales: Scales,
+  ) => JSX.Element;
   curveFactory?: CurveFactory;
-}
-
-export interface MinMaxes {
-  minX: number;
-  maxX: number;
-  minY: number;
-  maxY: number;
-}
-
-export interface Scales {
-  x: ScaleTime<number, number, never>;
-  y: ScaleLinear<number, number, never>;
-  height: number;
-  width: number;
 }
 
 const getMinMax = (data: DataPoint[][]): MinMaxes => {
@@ -67,11 +47,11 @@ const getScales = (minMax: MinMaxes, height: number, width: number) => {
   const {minX, maxX, minY, maxY} = minMax;
   const y = scaleLinear()
     .domain([minY, maxY])
-    .range([height - PADDING * 3, PADDING * 2]);
+    .range([height - PADDING * 3, PADDING * 3]);
 
   const x = scaleTime()
     .domain([new Date(minX), new Date(maxX)])
-    .range([PADDING * 4, width - PADDING * 2]);
+    .range([PADDING * 4, width - PADDING * 4]);
 
   return {x, y, height, width};
 };
@@ -98,8 +78,12 @@ const Curve = ({d, ...rest}: Omit<PathProps, 'd'> & {d: string}) => {
   const animComplete = useSharedValue(true);
   const progress = useSharedValue(1);
   const a = useAnimatedProps(() => {
+    let nextD = serialize(p1.value);
+    if (p2.value.curves.length <= p1.value.curves.length) {
+      nextD = mixPath(progress.value, p2.value, p1.value);
+    }
     return {
-      d: mixPath(progress.value, p2.value, p1.value),
+      d: nextD,
     };
   });
   useEffect(() => {
@@ -107,19 +91,6 @@ const Curve = ({d, ...rest}: Omit<PathProps, 'd'> & {d: string}) => {
       animComplete.value = false;
       progress.value = 0;
       p1.value = parse(d);
-      if (p2.value.curves.length !== p1.value.curves.length) {
-        if (p2.value.curves.length > p1.value.curves.length) {
-          p2.value = {
-            ...p2.value,
-            curves: p2.value.curves.slice(0, p1.value.curves.length - 1),
-          };
-        } else {
-          p1.value = {
-            ...p1.value,
-            curves: p1.value.curves.slice(0, p2.value.curves.length - 1),
-          };
-        }
-      }
       progress.value = withTiming(1, {}, () => {
         p2.value = p1.value;
         animComplete.value = true;
@@ -131,22 +102,88 @@ const Curve = ({d, ...rest}: Omit<PathProps, 'd'> & {d: string}) => {
 };
 
 const LineChart = ({
-  height = 200,
-  width = 200,
+  height = Dimensions.get('window').width * 0.7,
+  width = Dimensions.get('window').width,
   data,
   colors,
   drawExtras,
+  drawTooltip,
   curveFactory = curveNatural,
 }: LineChartProps) => {
   const {colors: themeColors} = useTheme();
   const minMaxes = getMinMax(data);
   const scales = getScales(minMaxes, height, width);
   const curves = data.map(d => makeCurve(d, scales, curveFactory));
+
+  // tooltip handling
+  const [tooltipData, setTooltipData] = useState<TooltipData[] | null>(null);
+  const handleTooltipGesutre = useCallback(
+    (eventX: number) => {
+      const nearestData = data.map((d, i) =>
+        d.reduce(
+          (curr, next) => {
+            const currX = scales.x(curr.data.ts);
+            const nextX = scales.x(next.ts);
+            if (Math.abs(eventX - currX) > Math.abs(eventX - nextX)) {
+              return {
+                data: next,
+                color: colors ? colors[i] : themeColors.primary,
+              };
+            }
+            return curr;
+          },
+          {data: {value: 0, ts: 0}, color: ''} as TooltipData,
+        ),
+      );
+      setTooltipData(nearestData);
+    },
+    [colors, data, scales, themeColors.primary],
+  );
+  const showTooltip = useCallback(
+    (event: GestureResponderEvent) => {
+      if (!drawTooltip) {
+        return false;
+      }
+      const {locationX} = event.nativeEvent;
+      handleTooltipGesutre(locationX);
+      return true;
+    },
+    [drawTooltip, handleTooltipGesutre],
+  );
+  const hideTooltip = useCallback(() => setTooltipData(null), []);
+  const updateTooltip = useCallback(
+    (event: GestureResponderEvent) => {
+      const throttledFn = throttle((e: GestureResponderEvent) => {
+        handleTooltipGesutre(e.nativeEvent.locationX);
+      }, 500);
+      throttledFn(event);
+    },
+    [handleTooltipGesutre],
+  );
+
   return (
     <Animated.View>
-      <Svg width={width} height={height}>
+      <Svg
+        width={width}
+        height={height}
+        onStartShouldSetResponder={showTooltip}
+        onResponderMove={updateTooltip}
+        onResponderRelease={hideTooltip}
+        onResponderTerminate={hideTooltip}>
         <G y={-PADDING}>
           {!!drawExtras && drawExtras(scales)}
+          {!!drawTooltip && drawTooltip(tooltipData, scales)}
+          {data.map((d, i) =>
+            d.map(({ts, value}, j) => (
+              <Circle
+                key={`circle-${i}-${j}`}
+                x={scales.x(ts)}
+                y={scales.y(value)}
+                fill={colors ? colors[i] : themeColors.primary}
+                r={2}
+              />
+            )),
+          )}
           {curves.map((curve, i) => (
             <Curve
               key={`curve-${width}-${i}`}

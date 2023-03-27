@@ -2,7 +2,7 @@ import React from 'react';
 import moment from 'moment';
 import {G, Text} from 'react-native-svg';
 import HorizontalRule from './HorizontalRule';
-import {DataPoint, Scales} from './LineChart';
+import {DataPoint, Scales} from './types';
 import VerticalRule from './VerticalRule';
 import {PADDING} from '../../theme';
 import {TimeSeries} from '../../api';
@@ -15,7 +15,7 @@ export const drawLegend = (
   return specs.map(({label, color}, i) => {
     const y = scales.height - (specs.length - i) * PADDING;
     return (
-      <G key={`label-${i}`}>
+      <G key={`label-${i}-${label}`}>
         <Text x={0} y={y} stroke={color} fontWeight={1}>
           {label}
         </Text>
@@ -30,19 +30,21 @@ export const drawXLabels = (
   getLabel?: (val: Date) => string | null,
   ticks?: number,
 ): JSX.Element[] => {
-  const xTicks = scales.x.ticks(ticks);
-  const widths = xTicks.map(t => ({w: scales.x(t), val: t}));
-  return widths.map(xs => {
+  return scales.x.ticks(ticks).map((t, i) => {
+    const tick = {x: scales.x(t), val: t};
+    const label = getLabel
+      ? getLabel(tick.val)
+      : moment(tick.val).format('hha');
     return (
-      <G key={xs.val.toISOString()}>
+      <G key={`xTick-${i}-${tick.val.toISOString()}`}>
         <Text
-          x={xs.w - PADDING}
+          x={tick.x - PADDING}
           y={scales.height}
           stroke={color}
           fontWeight={1}>
-          {getLabel ? getLabel(xs.val) : moment(xs.val).format('hha')}
+          {label}
         </Text>
-        <VerticalRule height={scales.height} width={xs.w} />
+        <VerticalRule height={scales.height} x={tick.x} />
       </G>
     );
   });
@@ -54,20 +56,19 @@ export const drawYLabels = (
   getLabel: (val: number) => string | null,
   ticks?: number,
 ): JSX.Element[] => {
-  const yTicks = scales.y.ticks(ticks);
-  const heights = yTicks.map(t => ({h: scales.y(t), val: t}));
-  return heights.map(ys => {
-    const label = getLabel(ys.val);
+  return scales.y.ticks(ticks).map((t, i) => {
+    const tick = {y: scales.y(t), val: t};
+    const label = getLabel(tick.val);
     if (!label) {
       // no corresponding label, nothing to show
-      return <></>;
+      return <G key={`yTick-${i}-${tick.val}`} />;
     }
     return (
-      <G key={ys.val}>
-        <Text x={0} y={ys.h} stroke={color} fontWeight={1}>
+      <G key={`yTick-${i}-${tick.val}`}>
+        <Text x={0} y={tick.y} stroke={color} fontWeight={1}>
           {label}
         </Text>
-        <HorizontalRule height={ys.h} width={scales.width} />
+        <HorizontalRule height={tick.y} width={scales.width} />
       </G>
     );
   });

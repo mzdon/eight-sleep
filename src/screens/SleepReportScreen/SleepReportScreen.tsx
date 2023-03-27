@@ -83,14 +83,14 @@ const SleepReportScreen = () => {
           sleepData={sleepData}
         />
         <Spacer />
-        {/* <SleepStagesCard
+        <SleepStagesCard
           duration={selectedDuration}
           durationType={durationType}
           sleepData={sleepData}
         />
         <Spacer />
         <TemperatureCard duration={selectedDuration} sleepData={sleepData} />
-        <Spacer /> */}
+        <Spacer />
         <HealthIndicators duration={selectedDuration} sleepData={sleepData} />
         <Spacer scale={2} />
       </ScrollView>

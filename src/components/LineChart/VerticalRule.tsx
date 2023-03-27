@@ -4,19 +4,21 @@ import {useTheme} from '../../theme';
 
 interface VerticalRuleProps {
   height: number;
-  width: number;
+  x: number;
+  color?: string;
+  opacity?: number;
 }
 
-const VerticalRule = ({height, width}: VerticalRuleProps) => {
+const VerticalRule = ({height, x, color, opacity}: VerticalRuleProps) => {
   const {colors} = useTheme();
   return (
     <Line
-      x1={width}
+      x1={x}
       y1={0}
-      x2={width}
+      x2={x}
       y2={height}
-      stroke={colors.onBackground}
-      opacity={0.3}
+      stroke={color ?? colors.onBackground}
+      opacity={opacity ?? 0.3}
       strokeWidth="1"
       strokeDasharray={[8, 12]}
     />

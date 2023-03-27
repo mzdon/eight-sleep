@@ -9,6 +9,8 @@ import LineChart, {
   drawLegend,
   drawXLabels,
   drawYLabels,
+  TooltipData,
+  Tooltip,
 } from './LineChart';
 import NoData from './NoData';
 
@@ -41,7 +43,7 @@ const determineChartData = (
 const getGetXLabel = (days: number) => (val: Date) =>
   moment(val).format(days > 1 ? 'dd' : 'hha');
 // TODO use RNLocalize to determine whether to show C or F and convert when necessary
-const getYLabel = (val: number) => `${val}ºC`;
+const getYLabel = (val: number) => `${val.toFixed(1)}ºC`;
 
 const drawExtras = (
   scales: Scales,
@@ -60,6 +62,13 @@ const drawExtras = (
   return rules;
 };
 
+const drawTooltip = (data: TooltipData[] | null, scales: Scales) => (
+  <Tooltip
+    dataPoints={data?.map(d => ({...d, format: getYLabel})) ?? null}
+    scales={scales}
+  />
+);
+
 const TemperatureChart = ({data}: TemperatureChartProps) => {
   const {colors} = useTheme();
   if (!data?.length) {
@@ -74,6 +83,7 @@ const TemperatureChart = ({data}: TemperatureChartProps) => {
       data={chartData.map(d => d.data)}
       colors={chartData.map(d => d.color)}
       drawExtras={scales => drawExtras(scales, chartData, colors, data.length)}
+      drawTooltip={drawTooltip}
     />
   );
 };
