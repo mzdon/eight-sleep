@@ -1,4 +1,4 @@
-import {Dimensions} from 'react-native/types';
+import {Dimensions} from 'react-native';
 
 export const getGraphWidth = () => {
   return Dimensions.get('window').width;
