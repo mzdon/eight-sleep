@@ -1,7 +1,7 @@
 import React from 'react';
-import {Dimensions} from 'react-native';
 import {ProgressChart as RnckProgressChart} from 'react-native-chart-kit';
 import {useChartConfig} from '../theme';
+import {getGraphHeight, getGraphWidth} from '../utils';
 import {withAdaptiveView} from './hoc';
 
 export interface ProgressChartProps {
@@ -12,8 +12,8 @@ export interface ProgressChartProps {
 
 const ProgressChart = ({
   data,
-  width = Dimensions.get('window').width,
-  height = Dimensions.get('window').width * 0.7,
+  width = getGraphWidth(),
+  height = getGraphHeight(),
 }: ProgressChartProps) => {
   const config = useChartConfig();
   return (

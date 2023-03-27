@@ -1,6 +1,7 @@
 import React from 'react';
 import {BarChart as RnckBarChart} from 'react-native-chart-kit';
 import {useChartConfig} from '../theme';
+import {getGraphHeight, getGraphWidth} from '../utils';
 import {withAdaptiveView} from './hoc';
 
 export interface BarChartProps {
@@ -15,8 +16,8 @@ const BarChart = ({
   data,
   yAxisLabel,
   yAxisSuffix,
-  width = 200,
-  height = 200,
+  width = getGraphWidth(),
+  height = getGraphHeight(),
 }: BarChartProps) => {
   const config = useChartConfig();
   return (

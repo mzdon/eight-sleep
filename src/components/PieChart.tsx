@@ -1,6 +1,7 @@
 import React from 'react';
 import {PieChart as RnckPieChart} from 'react-native-chart-kit';
 import {SPACING, useChartConfig} from '../theme';
+import {getGraphHeight, getGraphWidth} from '../utils';
 import {withAdaptiveView} from './hoc';
 
 export interface PieChartProps {
@@ -13,8 +14,8 @@ export interface PieChartProps {
 const PieChart = ({
   data,
   accessor,
-  width = 200,
-  height = 200,
+  width = getGraphWidth(),
+  height = getGraphHeight(),
 }: PieChartProps) => {
   const config = useChartConfig();
   return (

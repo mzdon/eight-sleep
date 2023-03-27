@@ -1,5 +1,5 @@
 import React, {useCallback, useEffect, useState} from 'react';
-import {Dimensions, GestureResponderEvent} from 'react-native';
+import {GestureResponderEvent} from 'react-native';
 import Animated, {
   useAnimatedProps,
   useSharedValue,
@@ -12,7 +12,7 @@ import {PADDING} from '../../theme';
 import {useTheme} from 'react-native-paper';
 import {withAdaptiveView} from '../hoc';
 import {DataPoint, MinMaxes, Scales, TooltipData} from './types';
-import {throttle} from '../../utils';
+import {getGraphHeight, getGraphWidth, throttle} from '../../utils';
 
 export interface LineChartProps {
   height?: number;
@@ -102,8 +102,8 @@ const Curve = ({d, ...rest}: Omit<PathProps, 'd'> & {d: string}) => {
 };
 
 const LineChart = ({
-  height = Dimensions.get('window').width * 0.7,
-  width = Dimensions.get('window').width,
+  height = getGraphHeight(),
+  width = getGraphWidth(),
   data,
   colors,
   drawExtras,
