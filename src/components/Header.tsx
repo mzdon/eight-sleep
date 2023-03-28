@@ -48,7 +48,10 @@ const Header = () => {
           return (
             <Menu.Item
               key={user.id}
-              onPress={() => userLib.selectUser(user.id)}
+              onPress={() => {
+                userLib.selectUser(user.id);
+                closeMenu();
+              }}
               title={user.firstName}
               accessibilityLabel={`View ${user.firstName} data`}
               accessibilityState={{

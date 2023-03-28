@@ -18,7 +18,7 @@ export interface SleepScoreProps {
   sleepData: UserSleepData | null;
 }
 
-function determineScore(sleepData: UserSleepData, duration: Duration) {
+function determineScores(sleepData: UserSleepData, duration: Duration) {
   const data = getIntervalDataPointsWithinDuration(
     sleepData,
     duration,
@@ -52,7 +52,9 @@ function getDataFromScores(
   let data: number[] = [];
   const iterator = getMomentIteratorFromDuration(duration);
   for (const mmnt of iterator) {
-    const score = scores.find(([ts]) => mmnt.isSame(moment(ts), 'date'));
+    const score = scores.find(([ts]) =>
+      moment(ts).isBetween(mmnt, mmnt.clone().add(24, 'hours')),
+    );
     data.push(score ? score[1] : 0);
   }
   return data;
@@ -72,7 +74,7 @@ function getBarChartData(scores: [string, number][], duration: Duration) {
 }
 
 const SleepScore = ({duration, durationType, sleepData}: SleepScoreProps) => {
-  const scores = sleepData ? determineScore(sleepData, duration) : null;
+  const scores = sleepData ? determineScores(sleepData, duration) : null;
   if (scores === null) {
     return <NoData />;
   }
