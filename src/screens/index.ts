@@ -1,4 +1,5 @@
+import AppRoot from './AppRoot';
 import SplashScreen from './SplashScreen';
 import SleepReportScreen from './SleepReportScreen';
 
-export {SleepReportScreen, SplashScreen};
+export {AppRoot, SleepReportScreen, SplashScreen};

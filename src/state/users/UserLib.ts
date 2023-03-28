@@ -24,8 +24,7 @@ const createUserLib = () =>
               isFetching: true,
               // encapsulate fetchPromise to avoid data access outside the lib state
               _fetchPromise: new Promise(async resolve => {
-                await fetchPromise;
-                resolve();
+                fetchPromise.catch(() => undefined).finally(() => resolve());
               }),
             },
             UserLibActions.FETCH_USER_DATA_START,
@@ -40,6 +39,7 @@ const createUserLib = () =>
             UserLibActions.FETCH_USER_DATA_SUCCESS,
           );
         } catch (e) {
+          console.log(e);
           const error = e instanceof Error ? e : new Error(JSON.stringify(e));
           updateState(
             {requestError: error},

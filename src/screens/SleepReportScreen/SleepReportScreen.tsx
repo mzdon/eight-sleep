@@ -18,6 +18,7 @@ import useSleepReportReducer, {setDurationTypeAction} from './reducer';
 import {useSelectNextDuration, useSelectPreviousDuration} from './hooks';
 import {DurationType} from '../../utils';
 import SleepScoreCard from '../../components/SleepScoreCard';
+import {useNetworkErrorSnack} from '../../components/Errors';
 
 const styles = StyleSheet.create({
   safeAreaView: {
@@ -35,11 +36,14 @@ const styles = StyleSheet.create({
 const SleepReportScreen = () => {
   const {
     sleepData,
-    sleep: {isFetching},
+    sleep: {isFetching, requestError},
   } = use(appState$);
   const {
     colors: {background: backgroundColor},
   } = useTheme();
+
+  // Error notification
+  const Snack = useNetworkErrorSnack(requestError);
 
   // UI state for selected duration and duration type
   const [state, dispatch] = useSleepReportReducer(sleepData);
@@ -94,6 +98,7 @@ const SleepReportScreen = () => {
         <HealthIndicators duration={selectedDuration} sleepData={sleepData} />
         <Spacer scale={2} />
       </ScrollView>
+      <Snack />
       {isFetching && <SplashScreen style={styles.splashScreen} />}
     </SafeAreaView>
   );
