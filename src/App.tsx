@@ -13,6 +13,7 @@ import {Provider as PaperProvider} from 'react-native-paper';
 import {useTheme} from './theme';
 import {AppRoot} from './screens';
 import {ErrorBoundary} from './components';
+import {useOrientation} from './utils';
 
 function App(): JSX.Element {
   const theme = useTheme();
@@ -20,6 +21,8 @@ function App(): JSX.Element {
     dark: isDarkMode,
     colors: {background: backgroundColor},
   } = theme;
+
+  useOrientation();
 
   return (
     <PaperProvider theme={theme}>

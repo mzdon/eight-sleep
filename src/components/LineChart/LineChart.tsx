@@ -180,7 +180,7 @@ const LineChart = ({
                 x={scales.x(ts)}
                 y={scales.y(value)}
                 fill={colors ? colors[i] : themeColors.primary}
-                r={2}
+                r={4}
               />
             )),
           )}
